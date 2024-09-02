@@ -18,6 +18,7 @@ func normalizeURL(rawURL string) (string, error) {
 	}
 
 	result := fmt.Sprintf("%v%v", parsedURL.Hostname(), strings.TrimSuffix(parsedURL.Path, "/"))
+	result = strings.ToLower(result)
 
 	return result, nil
 }

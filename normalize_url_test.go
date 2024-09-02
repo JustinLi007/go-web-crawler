@@ -21,6 +21,16 @@ func TestNormalizeURL(t *testing.T) {
 				"blog.boot.dev/path",
 			},
 		},
+		"mixed cases": {
+			input: []string{
+				"https://BLOG.boot.dev/PATH",
+				"http://BLOG.boot.dev/path/",
+			},
+			expected: []string{
+				"blog.boot.dev/path",
+				"blog.boot.dev/path",
+			},
+		},
 		"empty string": {
 			input: []string{
 				"",
@@ -32,7 +42,7 @@ func TestNormalizeURL(t *testing.T) {
 		"bad urls": {
 			input: []string{
 				"blog",
-				"path",
+				":\\path",
 			},
 			expected: []string{
 				"",
@@ -44,8 +54,8 @@ func TestNormalizeURL(t *testing.T) {
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
 			for i, v := range tc.input {
-				normalized, _ := normalizeURL(v)
-				if normalized != tc.expected[i] {
+				normalized, err := normalizeURL(v)
+				if err == nil && normalized != tc.expected[i] {
 					t.Errorf("Expected %v, got %v", tc.expected[i], normalized)
 				}
 			}

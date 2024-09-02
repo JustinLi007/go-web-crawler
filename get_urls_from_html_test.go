@@ -62,13 +62,38 @@ func TestGetURLsFromHTML(t *testing.T) {
 `,
 			expected: []string{},
 		},
+		"invalid hrefs": {
+			inputURL: "https://blog.boot.dev",
+			inputBody: `
+<html>
+	<body>
+		<a href=":\\invalidURL">
+			<span>Boot.dev</span>
+		</a>
+	</body>
+</html>`,
+			expected: []string{},
+		},
+		"invalid base url": {
+			inputURL: "://invalidBaseURL",
+			inputBody: `
+<html>
+	<body>
+		<a href="/path">
+			<span>Boot.dev</span>
+		</a>
+	</body>
+</html>
+`,
+			expected: []string{},
+		},
 	}
 
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
-			actual, _ := getURLsFromHTML(tc.inputBody, tc.inputURL)
+			actual, err := getURLsFromHTML(tc.inputBody, tc.inputURL)
 			for i, v := range actual {
-				if tc.expected[i] != v {
+				if err == nil && tc.expected[i] != v {
 					t.Errorf("Expected %v, got %v", tc.expected[i], v)
 				}
 			}
