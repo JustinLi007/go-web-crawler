@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strconv"
 )
 
 type PageList []Page
@@ -30,16 +31,28 @@ func (p PageList) Less(i, j int) bool {
 
 func main() {
 	numArgs := len(os.Args)
-	if numArgs < 2 {
-		log.Fatalf("no website provided")
-	} else if numArgs > 2 {
+	if numArgs < 4 {
+		log.Printf("no website provided")
+		fmt.Printf("usage: crawler <url> <maxConcurrency> <maxPages>")
+		return
+	} else if numArgs > 4 {
 		log.Fatalf("too many arguments provided")
 	}
 
 	baseURL := os.Args[1]
+	maxConcurrencyStr := os.Args[2]
+	maxPagesStr := os.Args[3]
 
-	const maxConcurrency = 10
-	cfg, err := configure(baseURL, maxConcurrency)
+	maxConcurrency, err := strconv.Atoi(maxConcurrencyStr)
+	if err != nil {
+		log.Printf("error - maxConcurrency: %v", err)
+	}
+	maxPages, err := strconv.Atoi(maxPagesStr)
+	if err != nil {
+		log.Printf("error - maxPages: %v", err)
+	}
+
+	cfg, err := configure(baseURL, maxConcurrency, maxPages)
 	if err != nil {
 		log.Fatalf("error - configure: %v", err)
 	}

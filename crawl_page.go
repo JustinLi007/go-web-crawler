@@ -13,6 +13,10 @@ func (cfg *config) crawlPage(rawCurrentURL string) {
 		cfg.wg.Done()
 	}()
 
+	if cfg.isPageLimit() {
+		return
+	}
+
 	parsedCurrentURL, err := url.Parse(rawCurrentURL)
 	if err != nil {
 		log.Printf("error - crawlPage: failed to parse URL %v: %v", rawCurrentURL, err)
