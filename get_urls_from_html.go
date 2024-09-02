@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/url"
 	"strings"
@@ -11,12 +12,12 @@ import (
 func getURLsFromHTML(htmlBody string, rawBaseURL string) ([]string, error) {
 	baseURL, err := url.Parse(rawBaseURL)
 	if err != nil {
-		return []string{}, err
+		return []string{}, fmt.Errorf("failed to parse base URL: %v", err)
 	}
 
 	doc, err := html.Parse(strings.NewReader(htmlBody))
 	if err != nil {
-		log.Printf("failed to parse html body: %v", err)
+		log.Printf("failed to parse html: %v", err)
 	}
 
 	result := []string{}

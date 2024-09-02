@@ -26,7 +26,7 @@ func getHTML(rawURL string) (string, error) {
 		return "", errors.New(resp.Status)
 	}
 	if contentType := resp.Header.Get("Content-Type"); !strings.HasPrefix(contentType, "text/html") {
-		return "", errors.New(fmt.Sprintf("expected content type %v, got %v", "text/html", contentType))
+		return "", fmt.Errorf("expected content type %v, got %v", "text/html", contentType)
 	}
 
 	data, err := io.ReadAll(resp.Body)

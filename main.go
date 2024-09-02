@@ -9,10 +9,10 @@ import (
 func main() {
 	numArgs := len(os.Args)
 	if numArgs < 2 {
-		fmt.Printf("no website provided")
+		fmt.Println("no website provided")
 		os.Exit(1)
 	} else if numArgs > 2 {
-		fmt.Printf("too many arguments provided")
+		fmt.Println("too many arguments provided")
 		os.Exit(1)
 	}
 
@@ -21,7 +21,7 @@ func main() {
 
 	htmlBody, err := getHTML(baseURL)
 	if err != nil {
-		log.Printf("failed to get html from %v: %v", baseURL, err)
+		log.Println(err)
 	}
 
 	fmt.Println(htmlBody)

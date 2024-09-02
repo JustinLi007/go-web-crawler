@@ -1,6 +1,8 @@
 package main
 
 import (
+	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -9,6 +11,7 @@ func TestGetURLsFromHTML(t *testing.T) {
 		inputURL  string
 		inputBody string
 		expected  []string
+		error     string
 	}{
 		"absolute and relative urls": {
 			inputURL: "https://blog.boot.dev",
@@ -25,6 +28,7 @@ func TestGetURLsFromHTML(t *testing.T) {
 </html>
 `,
 			expected: []string{"https://blog.boot.dev/path/one", "https://other.com/path/one"},
+			error:    "",
 		},
 		"nested absolute and relative urls": {
 			inputURL: "https://blog.boot.dev",
@@ -45,6 +49,7 @@ func TestGetURLsFromHTML(t *testing.T) {
 </html>
 `,
 			expected: []string{"https://blog.boot.dev/path/one", "https://other.com/path/one", "http://nested.in.span.com", "https://blog.boot.dev/nested/relative"},
+			error:    "",
 		},
 		"no href": {
 			inputURL: "https://blog.boot.dev",
@@ -61,6 +66,7 @@ func TestGetURLsFromHTML(t *testing.T) {
 </html>
 `,
 			expected: []string{},
+			error:    "",
 		},
 		"invalid hrefs": {
 			inputURL: "https://blog.boot.dev",
@@ -73,6 +79,7 @@ func TestGetURLsFromHTML(t *testing.T) {
 	</body>
 </html>`,
 			expected: []string{},
+			error:    "",
 		},
 		"invalid base url": {
 			inputURL: "://invalidBaseURL",
@@ -86,16 +93,28 @@ func TestGetURLsFromHTML(t *testing.T) {
 </html>
 `,
 			expected: []string{},
+			error:    "failed to parse base URL",
 		},
 	}
 
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
 			actual, err := getURLsFromHTML(tc.inputBody, tc.inputURL)
-			for i, v := range actual {
-				if err == nil && tc.expected[i] != v {
-					t.Errorf("Expected %v, got %v", tc.expected[i], v)
-				}
+			if err != nil && !strings.Contains(err.Error(), tc.error) {
+				t.Errorf("Unexpected error: %v", err)
+				return
+			}
+			if err != nil && tc.error == "" {
+				t.Errorf("Unexpected error: %v", err)
+				return
+			}
+			if err == nil && tc.error != "" {
+				t.Errorf("Expected error %v, got none", tc.error)
+				return
+			}
+			if !reflect.DeepEqual(actual, tc.expected) {
+				t.Errorf("Expected urls %v, got %v", tc.expected, actual)
+				return
 			}
 		})
 	}
