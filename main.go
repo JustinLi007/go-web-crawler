@@ -3,35 +3,26 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
+	numArgs := len(os.Args)
+	if numArgs < 2 {
+		fmt.Printf("no website provided")
+		os.Exit(1)
+	} else if numArgs > 2 {
+		fmt.Printf("too many arguments provided")
+		os.Exit(1)
+	}
 
-	htmlBody := `
-<html>
-	<body>
-		<a href="/path/one">
-			<span>Boot.dev</span>
-		</a>
-		<a href="https://other.com/path/one">
-			<span>
-Boot.dev
-<a href="https://nesting.in.span.com">
-            </span>
-		</a>
-	</body>
-</html>
-`
+	baseURL := os.Args[1]
+	fmt.Printf("starting crawl of: %v\n", baseURL)
 
-	baseURL := "https://blog.boot.dev"
-
-	allURLs, err := getURLsFromHTML(htmlBody, baseURL)
+	htmlBody, err := getHTML(baseURL)
 	if err != nil {
-		log.Print(err)
+		log.Printf("failed to get html from %v: %v", baseURL, err)
 	}
 
-	for _, v := range allURLs {
-		fmt.Println(v)
-	}
+	fmt.Println(htmlBody)
 }
