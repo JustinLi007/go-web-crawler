@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/url"
 	"strings"
@@ -9,12 +8,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func getURLsFromHTML(htmlBody string, rawBaseURL string) ([]string, error) {
-	baseURL, err := url.Parse(rawBaseURL)
-	if err != nil {
-		return []string{}, fmt.Errorf("failed to parse base URL: %v", err)
-	}
-
+func getURLsFromHTML(htmlBody string, baseURL *url.URL) ([]string, error) {
 	doc, err := html.Parse(strings.NewReader(htmlBody))
 	if err != nil {
 		log.Printf("failed to parse html: %v", err)
